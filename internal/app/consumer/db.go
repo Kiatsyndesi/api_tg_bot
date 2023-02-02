@@ -63,11 +63,11 @@ func NewCustomer(
 	eventsWriting chan<- model.PhonesEvent,
 	repo repo.EventRepo,
 	butchSize uint64,
-	timeout time.Duration) *Customer {
+	timeout time.Duration) Customer {
 
 	wg := &sync.WaitGroup{}
 	doneChan := make(chan bool)
-	return &Customer{
+	return Customer{
 		n:         numberOfCustomers,
 		events:    eventsWriting,
 		repo:      repo,
