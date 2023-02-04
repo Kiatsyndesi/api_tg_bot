@@ -35,12 +35,12 @@ import (
 2. закрываем канал с булевыми
 */
 
-type ICustomer interface {
+type IConsumer interface {
 	Start()
 	Close()
 }
 
-type Customer struct {
+type Consumer struct {
 	n         uint64
 	events    chan<- model.PhonesEvent
 	repo      repo.EventRepo
@@ -58,17 +58,17 @@ type Config struct {
 	timeout   time.Duration
 }
 
-func NewCustomer(
-	numberOfCustomers uint64,
+func NewConsumer(
+	numberOfConsumers uint64,
 	eventsWriting chan<- model.PhonesEvent,
 	repo repo.EventRepo,
 	butchSize uint64,
-	timeout time.Duration) Customer {
+	timeout time.Duration) Consumer {
 
 	wg := &sync.WaitGroup{}
 	doneChan := make(chan bool)
-	return Customer{
-		n:         numberOfCustomers,
+	return Consumer{
+		n:         numberOfConsumers,
 		events:    eventsWriting,
 		repo:      repo,
 		butchSize: butchSize,
@@ -78,7 +78,7 @@ func NewCustomer(
 	}
 }
 
-func (c *Customer) Start() {
+func (c *Consumer) Start() {
 	for i := uint64(0); i < c.n; i++ {
 		c.wg.Add(1)
 
@@ -106,7 +106,7 @@ func (c *Customer) Start() {
 	}
 }
 
-func (c *Customer) Close() {
+func (c *Consumer) Close() {
 	c.wg.Wait()
 	close(c.doneChan)
 }

@@ -14,13 +14,13 @@ type IProducer interface {
 }
 
 type Producer struct {
-	n          uint64
-	events     <-chan model.PhonesEvent
-	sender     sender.EventSender
-	workerPool *workerpool.WorkerPool
-	timeout    time.Duration
-	doneChan   chan bool
-	wg         *sync.WaitGroup
+	n             uint64
+	eventsReading <-chan model.PhonesEvent
+	sender        sender.EventSender
+	workerPool    *workerpool.WorkerPool
+	timeout       time.Duration
+	doneChan      chan bool
+	wg            *sync.WaitGroup
 }
 
 func NewKafkaProducer(
@@ -33,12 +33,12 @@ func NewKafkaProducer(
 	doneChan := make(chan bool)
 
 	return Producer{
-		n:          n,
-		events:     events,
-		sender:     sender,
-		workerPool: workerPool,
-		doneChan:   doneChan,
-		wg:         wg,
+		n:             n,
+		eventsReading: events,
+		sender:        sender,
+		workerPool:    workerPool,
+		doneChan:      doneChan,
+		wg:            wg,
 	}
 }
 
@@ -50,7 +50,7 @@ func (p *Producer) Start() {
 			defer p.wg.Done()
 
 			select {
-			case event := <-p.events:
+			case event := <-p.eventsReading:
 				if err := p.sender.Send(&event); err != nil {
 					p.workerPool.Submit(func() {
 						//делаем какую-нибудь логику если пришла ошибка
