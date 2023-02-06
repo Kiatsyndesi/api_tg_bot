@@ -13,10 +13,9 @@ const (
 	Created = iota
 	Updated
 	Removed
-)
-const (
+
 	Deffered EventStatus = iota
-	processed
+	Processed
 )
 
 type PhonesEvent struct {
